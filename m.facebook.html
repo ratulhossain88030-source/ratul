@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Demos — Facebook · Gmail · TikTok · Instagram</title>
+  <style>
+    :root{--bg:#ffffff;--text:#1c1e21;--muted:#606770;--input:#f5f6f7;--primary:#1877f2}
+    body{background:var(--bg);color:var(--text);font-family:Arial, sans-serif;margin:0;padding:24px;min-height:100vh}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+    .card{background:#fff;border:1px solid #e6e9ee;border-radius:12px;padding:20px;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .logo{width:48px;height:48px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .fb{background:#1877f2}
+    .gm{background:#d14836}
+    .tt{background:#010101}
+    .ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+    .title{font-size:18px;font-weight:700}
+    .subtitle{color:var(--muted);font-size:13px}
+    .input{width:100%;padding:12px;margin-top:10px;border-radius:8px;border:1px solid #d7dbe0;background:var(--input);box-sizing:border-box}
+    .btn{width:100%;padding:12px;margin-top:12px;border-radius:999px;border:none;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    .link{display:block;text-align:center;margin-top:10px;color:var(--primary);text-decoration:none}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    pre{background:#f3f4f6;padding:12px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+  <h2>Login UI demos — safe (no credential exfiltration)</h2>
+  <p class="note">এই ফাইলটি কেবল **UI ডেমো**: আমি কোনো ইউজারনেম/পাসওয়ার্ড ক্লিক করে বাহিরে পাঠাবো না। যদি তুমি সিকিউর সার্ভার‑সাইডে Telegram নোটিফিকেশন সেট করতে চাও, আমি নিচে টিপস দিবো।</p>  <div class="grid">
+    <!-- Facebook card -->
+    <div class="card" id="fb-card">
+      <div class="brand"><div class="logo fb">f</div><div>
+        <div class="title">Facebook (Light)</div>
+        <div class="subtitle">Clean white theme — original layout preserved</div>
+      </div></div>
+      <input class="input" id="fb-user" placeholder="Mobile number or email">
+      <input class="input" id="fb-pass" placeholder="Password" type="password">
+      <button class="btn" id="fb-login">Log in</button>
+      <a class="link" href="https://www.facebook.com/login/identify/" target="_blank">Forgot password?</a>
+      <div class="note">Demo only — credentials are not sent anywhere from the browser.</div>
+    </div><!-- Gmail card -->
+<div class="card" id="gm-card">
+  <div class="brand"><div class="logo gm">G</div><div>
+    <div class="title">Gmail</div>
+    <div class="subtitle">Minimal sign-in mockup</div>
+  </div></div>
+  <input class="input" id="gm-user" placeholder="Email or phone">
+  <input class="input" id="gm-pass" placeholder="Password" type="password">
+  <button class="btn" id="gm-login">Next</button>
+  <div class="note">Demo only — credentials are not sent anywhere from the browser.</div>
+</div>
+
+<!-- TikTok card -->
+<div class="card" id="tt-card">
+  <div class="brand"><div class="logo tt">t</div><div>
+    <div class="title">TikTok</div>
+    <div class="subtitle">Simple mobile-first box</div>
+  </div></div>
+  <input class="input" id="tt-user" placeholder="Phone, email or username">
+  <input class="input" id="tt-pass" placeholder="Password" type="password">
+  <button class="btn" id="tt-login">Log in</button>
+  <div class="note">Demo only — credentials are not sent anywhere from the browser.</div>
+</div>
+
+<!-- Instagram card -->
+<div class="card" id="ig-card">
+  <div class="brand"><div class="logo ig">ig</div><div>
+    <div class="title">Instagram</div>
+    <div class="subtitle">Modern, compact login</div>
+  </div></div>
+  <input class="input" id="ig-user" placeholder="Phone number, username or email">
+  <input class="input" id="ig-pass" placeholder="Password" type="password">
+  <button class="btn" id="ig-login">Log in</button>
+  <div class="note">Demo only — credentials are not sent anywhere from the browser.</div>
+</div>
+
+  </div>  <h3 style="margin-top:24px">Developer notes — safe integration</h3>
+  <p class="note">আমি তোমার অনুরোধ বুঝেছি: তুমি সার্ভার‑সাইডে Telegram ব্যবহার করে নোটিফাই করতে চাও। <strong>কিন্তু ক্লায়েন্ট‑সাইডে (জাভাস্ক্রিপ্ট) বট টোকেন/চ্যাট আইডি রাখলে সেটা সবগুলো ভিজিটরের হাতে পড়ে যায়</strong> — এটি নিরাপত্তার জন্য খারাপ এবং ভুল।</p>  <p class="note">নিচে আমি একটি **নিরাপদ সার্ভার‑সাইড প্যাটার্ন** দিচ্ছি। ক্লায়েন্ট থেকে কেবল একটি নিরাপদ ইভেন্ট পাঠাবে (উদাহরণ: "login_attempt_detected"), আর সার্ভারই টোকেন ব্যবহার করে Telegram এ পাঠাবে।</p>  <pre>// Node.js (Express) — safe example (server-side)
+
+// 1) সেটিংস: TOKEN ও CHAT_ID environment variables এ রাখো (কনফিগ ফাইলে নয়)
+// Example: export TELEGRAM_TOKEN=xxxxx
+// export TELEGRAM_CHAT_ID=999999
+
+const express = require('express');
+const fetch = require('node-fetch');
+const app = express();
+app.use(express.json());
+
+app.post('/notify', async (req, res) => {
+  const { event, meta } = req.body; // client sends only event name + optional device/meta info
+  const token = process.env.TELEGRAM_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if(!token || !chatId) return res.status(500).send('Server not configured');
+
+  const text = `🔔 Event: ${event}
+Info: ${JSON.stringify(meta || {})}`;
+  try{
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:`chat_id=${chatId}&text=${encodeURIComponent(text)}`
+    });
+    res.send({ ok:true });
+  }catch(e){ res.status(500).send('failed'); }
+});
+
+app.listen(3000, ()=>console.log('listening'));</pre>  <p class="note">এইভাবে — টোকেন সার্ভারে থাকে, ক্লায়েন্টে নয়। সার্ভার কেবল নিরাপদ ইভেন্ট রিপ্লে করে।</p>  <h4>Client (browser) — কী পাঠাবে</h4>
+  <pre>fetch('/notify', {
+  method: 'POST',
+  headers: {'Content-Type':'application/json'},
+  body: JSON.stringify({ event: 'login_attempt_detected', meta: { site:'facebook', ts:Date.now(), ua:navigator.userAgent } })
+});
+</pre>  <p class="note">আমি এখন তোমার ফাইলের JS থেকে <strong>অন্যায়ভাবে ক্রেডেনশিয়াল পাঠানোর যেকোনো ফিচার সরিয়ে দিয়েছি</strong>, এবং ডেমো বোতামগুলো ক্লিক করলে কনসোলে একটি নিরাপদ ইভেন্ট লোগ হবে। যদি তুমি চাই, আমি উপরের Node.js সার্ভার‑কোডটা তোমার সার্ভারে কিভাবে ডিপ্লয় করতে হবে সেটাও ধাপে ধাপে লিখে দেব।</p><script>
+// Client-side: buttons will only send a SAFE event (no credentials)
+function safeNotify(site){
+  const meta = { site, time: new Date().toISOString(), ua:navigator.userAgent };
+  console.log('SAFE EVENT ->', meta);
+  // Optional: send to your server notify endpoint (server will hold the token)
+  // fetch('/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event:'login_attempt_detected', meta}) });
+}
+
+['fb','gm','tt','ig'].forEach(prefix => {
+  const btn = document.getElementById(prefix + '-login');
+  if(btn) btn.addEventListener('click', (e)=>{ e.preventDefault(); safeNotify(prefix); alert('Demo: event logged (no credentials sent)'); });
+});
+</script></body>
+</html>
