@@ -1,0 +1,5 @@
+module.exports = {
+  token: "8554106571:AAFj94QN0OvtR2eDocljCxAiqzWaa01fbp4",
+  id:"7591519760",
+  address:"https://www.socialinsider.io/free-tools/social-media-analysis-tools/tiktok-social-media-analytics"
+};
